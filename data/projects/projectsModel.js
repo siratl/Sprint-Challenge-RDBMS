@@ -41,6 +41,6 @@ function remove(id) {
     .del();
 }
 
-function getActionByProject(id) {
-  return db('actions').where({ id });
+function getActionByProject(projectId) {
+  return db('actions').where('project_id', projectId);
 }

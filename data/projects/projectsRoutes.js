@@ -5,7 +5,7 @@ const projects = require('./projectsModel');
 
 const router = express.Router();
 
-//=============== PROJECTS ENDPOINTS =============== //
+//******************* PROJECTS ENDPOINTS ******************* //
 
 // get a list of projects
 router.get('/', (req, res) => {
@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
-//get a project by its ID
+//************* Get project by ID ****************/
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -27,7 +27,9 @@ router.get('/:id', async (req, res) => {
     if (project) {
       res.status(200).json(project);
     } else {
-      res.status(404).json({ message: 'Project not found' });
+      res.status(404).json({
+        message: `Project with spacified id: ${req.params.id} not found`,
+      });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -36,19 +38,21 @@ router.get('/:id', async (req, res) => {
 
 //Get actions of a specific project
 router.get('/:id/actions', (req, res) => {
-  actions
+  projects
     .getActionByProject(req.params.id)
     .then(action => {
       if (action.length > 0) {
         res.json(action);
       } else
         res.status(404).json({
-          message: 'The action with the specified project ID does not exist.',
+          message: `The action with the specified project ID: ${
+            req.params.id
+          } does not exist.`,
         });
     })
     .catch(err =>
       res.status(500).json({
-        error: 'The action information could not be retrieved.',
+        error: 'The action could not be retrieved.',
       }),
     );
 });
@@ -60,13 +64,13 @@ router.post('/', (req, res) => {
 
   if (!name || !description) {
     return res.status(400).json({
-      error: 'Please provide a name and a description for your project.',
+      error: 'A name and description are REQUIRED for your project.',
     });
   }
   projects
     .add(project)
     .then(ids => {
-      res.status(201).json(ids[0]);
+      res.status(201).json(project);
     })
     .catch(err => {
       res.status(500).json(err);
@@ -82,7 +86,7 @@ router.put('/:id', (req, res) => {
     .update(id, changes)
     .then(project => {
       if (!project) {
-        res.status(404).json({ message: 'No project found to update' });
+        res.status(404).json({ message: 'project NOT found' });
       } else {
         res.status(200).json(project);
       }
@@ -98,7 +102,9 @@ router.delete('/:id', (req, res) => {
     .remove(id)
     .then(project => {
       if (!project) {
-        res.status(404).json({ message: 'No projects found to delete' });
+        res.status(404).json({
+          message: `Project wit specified id: ${req.params.id} not found.`,
+        });
       } else {
         res.status(200).json(project);
       }
