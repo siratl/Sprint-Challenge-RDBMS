@@ -36,7 +36,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-//Get actions of a specific project
+//************************** GET PROJECT ACTIONS *************************/
 router.get('/:id/actions', (req, res) => {
   projects
     .getActionByProject(req.params.id)
@@ -52,12 +52,12 @@ router.get('/:id/actions', (req, res) => {
     })
     .catch(err =>
       res.status(500).json({
-        error: 'The action could not be retrieved.',
+        error: `The Specified project '${id}' action(s) could not be retrieved.`,
       }),
     );
 });
 
-// Add a project
+//************************** ADD NEW PROJECT *************************/
 router.post('/', (req, res) => {
   const { name, description } = req.body;
   const project = { name, description };
@@ -77,7 +77,7 @@ router.post('/', (req, res) => {
     });
 });
 
-// update a project
+//************************** UPDATE PROJECT *************************/
 router.put('/:id', (req, res) => {
   const { id } = req.params;
   const changes = req.body;
@@ -86,27 +86,29 @@ router.put('/:id', (req, res) => {
     .update(id, changes)
     .then(project => {
       if (!project) {
-        res.status(404).json({ message: 'project NOT found' });
+        res.status(404).json({
+          message: `Project with specified id: ${req.params.id} NOT found`,
+        });
       } else {
-        res.status(200).json(project);
+        res.status(200).json({ message: 'Update Sucessful!', changes });
       }
     })
     .catch(err => res.status(500).json(err));
 });
 
-// delete a project
+//************************** DELETE PROJECT *************************/
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
 
   projects
     .remove(id)
-    .then(project => {
-      if (!project) {
+    .then(deleted => {
+      if (!deleted) {
         res.status(404).json({
           message: `Project wit specified id: ${req.params.id} not found.`,
         });
       } else {
-        res.status(200).json(project);
+        res.status(200).json({ message: 'Project Deleted!', deleted });
       }
     })
     .catch(err => res.status(500).json(err));
